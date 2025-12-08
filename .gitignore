@@ -1,0 +1,24 @@
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+.env/
+
+# Datasets / big files
+data/md_lc_2018_2022-Edition/
+logs/
+lightning_logs/
+*.tif
+*.tif.*
+*.gpkg
+*.xml
+*.aux.xml
+
+# Model weights
+*.pt
+*.pth
