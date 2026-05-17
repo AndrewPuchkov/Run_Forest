@@ -48,7 +48,7 @@ def setup_argparse() -> argparse.ArgumentParser:
             "resnext50_32x4d",
             "resnext101_32x8d",
         ],
-        default="resnet50",
+        default="resnet18",
         help="Backbone architecture to use.",
     )
     parser.add_argument(
@@ -117,15 +117,16 @@ def main(args: argparse.Namespace) -> None:
         gpu_id = [args.gpu_id]
 
     trainer = lightning.Trainer(
-        accelerator="cpu",
+        accelerator="gpu",
         precision="32",
         devices=1,
         min_epochs=args.num_epochs,
-        limit_train_batches=0.01,
-        limit_val_batches=0.01,
+        limit_train_batches=1.0,
+        limit_val_batches=1.0,
         max_epochs=args.num_epochs,
         log_every_n_steps=1,
         default_root_dir=experiment_name,
+        num_sanity_val_steps=0
     )
 
     trainer.fit(task, dm)

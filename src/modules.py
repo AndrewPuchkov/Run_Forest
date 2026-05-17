@@ -10,7 +10,7 @@ from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torchgeo.trainers import SemanticSegmentationTask
 from torchmetrics import MetricCollection
-from torchmetrics.classification import Accuracy, FBetaScore, Precision, Recall
+from torchmetrics.classification import Accuracy, FBetaScore, Precision, Recall, JaccardIndex
 from torchmetrics.wrappers import ClasswiseWrapper
 from torchvision.models._api import WeightsEnum
 from torchgeo.models import FCN, get_weight
@@ -81,6 +81,10 @@ class CustomSemanticSegmentationTask(SemanticSegmentationTask):
                     average="micro",
                     multidim_average="global",
                 ),
+                "OverallIoU": JaccardIndex(
+                    task="multiclass",
+                    num_classes=num_classes,
+                ),
                 "Accuracy": ClasswiseWrapper(
                     Accuracy(
                         task="multiclass",
@@ -112,6 +116,13 @@ class CustomSemanticSegmentationTask(SemanticSegmentationTask):
                         beta=1.0,
                         average="none",
                         multidim_average="global",
+                    ),
+                ),
+                "IoU": ClasswiseWrapper(
+                    JaccardIndex(
+                        task="multiclass",
+                        num_classes=num_classes,
+                        average="none",
                     ),
                 ),
             },
