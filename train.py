@@ -117,7 +117,7 @@ def main(args: argparse.Namespace) -> None:
         gpu_id = [args.gpu_id]
 
     trainer = lightning.Trainer(
-        accelerator="gpu",
+        accelerator="cpu",
         precision="32",
         devices=1,
         min_epochs=args.num_epochs,
