@@ -85,7 +85,7 @@ def main(args):
     # Get all windows
     remaining_windows = []
     remaining_idxs = []
-    with fiona.open("data/patches.gpkg") as f:
+    with fiona.open("../data/patches.gpkg") as f:
         src_crs = f.crs
         for row in tqdm(f):
             minx = row["properties"]["minx"]
@@ -113,7 +113,7 @@ def main(args):
     for idx, window in tqdm(list(zip(remaining_idxs, remaining_windows))):
         geom = shapely.geometry.mapping(shapely.geometry.box(*window))
         with rasterio.open(
-            "data/md_lc_2018_2022-Edition/md_lc_2018_2022-Edition.tif", "r"
+                "../data/md_lc_2018_2022-Edition/md_lc_2018_2022-Edition.tif", "r"
         ) as f:
             mask, _ = rasterio.mask.mask(f, [geom], crop=True)
 

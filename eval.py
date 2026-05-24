@@ -76,8 +76,26 @@ def main(args):
         precision_road = cnf[1, 1] / (cnf[0, 1] + cnf[1, 1] + cnf[2, 1])
         precision_tree_canopy_over_road = cnf[2, 2] / (cnf[0, 2] + cnf[1, 2] + cnf[2, 2])
 
+        iou_background = cnf[0, 0] / (cnf[0, 0] + cnf[0, 1] + cnf[0, 2] + cnf[1, 0] + cnf[2, 0])
+        iou_road = cnf[1, 1] / (cnf[1, 1] + cnf[1, 0] + cnf[1, 2] + cnf[0, 1] + cnf[2, 1])
+        iou_tree = cnf[2, 2] / (cnf[2, 2] + cnf[2, 0] + cnf[2, 1] + cnf[0, 2] + cnf[1, 2])
+        mean_iou = (iou_background + iou_road + iou_tree) / 3
+
+        f1_background = (2 * cnf[0, 0]) / (2 * cnf[0, 0] + cnf[0, 1] + cnf[0, 2] + cnf[1, 0] + cnf[2, 0])
+        f1_road = 2 * precision_road * recall_road / (precision_road + recall_road) if (precision_road + recall_road) > 0 else 0.0
+        f1_tree_canopy_over_road = 2 * precision_tree_canopy_over_road * recall_tree_canopy_over_road / (
+                precision_tree_canopy_over_road + recall_tree_canopy_over_road) if (precision_tree_canopy_over_road + recall_tree_canopy_over_road) > 0 else 0.0
+        mean_f1 = (f1_road + f1_tree_canopy_over_road) / 3
+
         print(
-            f"{recall_background},{precision_background},{recall_road},{precision_road},{recall_tree_canopy_over_road},{precision_tree_canopy_over_road}")
+            f"Road (1)-class: recall: {recall_road}, precision:{precision_road}\n"
+            f"Tree_canopy_over_road class (2): recall: {recall_tree_canopy_over_road}, precision: {precision_tree_canopy_over_road}\n"
+            f"IoU: дороги под кронами = {iou_tree}, дороги обычные : {iou_road}\n"
+            f"meanIoU усреднённая по всем классам = {mean_iou} \n"
+            f"f1_tree_canopy_over_road: {f1_tree_canopy_over_road}, f1_road: {f1_road}"
+            f"F1-Overall: {mean_f1}"
+        )
+
     else:
         cnf = np.zeros((3, 2), dtype=np.int64)
         weighted_tp = 0.0

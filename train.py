@@ -1,10 +1,9 @@
 import argparse
 import os
 import warnings
-
 import torch
 import lightning
-
+from lightning.pytorch.callbacks import ModelCheckpoint
 from src.datamodules import ChesapeakeRSCDataModule
 from src.modules import CustomSemanticSegmentationTask
 
@@ -92,15 +91,15 @@ def main(args: argparse.Namespace) -> None:
         root=args.root_dir,
         batch_size=args.batch_size,
         num_workers=8,
-        differentiate_tree_canopy_over_roads=False,
+        differentiate_tree_canopy_over_roads=True,
     )
 
     task = CustomSemanticSegmentationTask(
         model=args.model,
         backbone=args.backbone,
         weights=True,
-        in_channels=4,
-        num_classes=2,
+        in_channels=3,
+        num_classes=3,
         num_filters=args.num_filters,
         loss="ce",
         lr=args.lr,
@@ -116,17 +115,27 @@ def main(args: argparse.Namespace) -> None:
     if args.gpu_id is not None:
         gpu_id = [args.gpu_id]
 
+    checkpoint_callback = ModelCheckpoint(
+        monitor="val_loss",
+        mode="min",
+        save_top_k=3,
+        save_last=True,
+        filename="best-{epoch:02d}-{val_loss:.4f}"
+    )
+
     trainer = lightning.Trainer(
-        accelerator="cpu",
-        precision="32",
+        accelerator="gpu",
+        precision="16-mixed",
         devices=1,
         min_epochs=args.num_epochs,
         limit_train_batches=1.0,
         limit_val_batches=1.0,
         max_epochs=args.num_epochs,
-        log_every_n_steps=1,
+        log_every_n_steps=20,
         default_root_dir=experiment_name,
-        num_sanity_val_steps=0
+        num_sanity_val_steps=2,
+        callbacks=[checkpoint_callback],
+        benchmark=True,
     )
 
     trainer.fit(task, dm)

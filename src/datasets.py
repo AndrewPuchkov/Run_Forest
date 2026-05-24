@@ -40,8 +40,10 @@ class ChesapeakeRSC(NonGeoDataset):
                 idx = row["properties"]["idx"]
                 if idx not in idxs:
                     continue
-                image_fn = os.path.join(root, "images", f"{idx}_image.tif")
-                mask_fn = os.path.join(root, "masks", f"{idx}_mask.tif")
+                #image_fn = os.path.join(root, "images", f"{idx}_image.tif")
+                #mask_fn = os.path.join(root, "masks", f"{idx}_mask.tif")
+                image_fn = os.path.join(root, "images", f"{idx}_image.jpg")
+                mask_fn = os.path.join(root, "masks", f"{idx}_mask.jpg")
                 if os.path.exists(image_fn) and os.path.exists(mask_fn):
                     self.image_fns.append(image_fn)
                     self.mask_fns.append(mask_fn)

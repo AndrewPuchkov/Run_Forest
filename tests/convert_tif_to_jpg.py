@@ -14,7 +14,7 @@ OUTPUT_MASKS = OUTPUT_ROOT / "masks"
 OUTPUT_IMAGES.mkdir(parents=True, exist_ok=True)
 OUTPUT_MASKS.mkdir(parents=True, exist_ok=True)
 
-NUM_FILES = 100   # сколько первых файлов взять
+NUM_FILES = 10000   # сколько первых файлов взять
 
 print("Получаем список файлов...")
 
@@ -34,7 +34,7 @@ print("\nНачинаем конвертацию...")
 
 for i, (tif_img, tif_mask) in enumerate(tqdm(zip(image_files, mask_files))):
     name = tif_img.stem  # например "40730"
-
+    name1 = tif_mask.stem
     # Конвертируем изображение
     with rasterio.open(tif_img) as src:
         data = src.read()[:3]                    # RGB каналы
@@ -44,7 +44,7 @@ for i, (tif_img, tif_mask) in enumerate(tqdm(zip(image_files, mask_files))):
     # Конвертируем маску
     with rasterio.open(tif_mask) as src:
         mask = src.read(1)
-        Image.fromarray(mask.astype(np.uint8)).save(OUTPUT_MASKS / f"{name}.png")
+        Image.fromarray(mask.astype(np.uint8)).save(OUTPUT_MASKS / f"{name1}.jpg")
 
 print("\n✅ Готово!")
 print(f"Изображения → {OUTPUT_IMAGES}")
